@@ -1,1 +1,12 @@
 /* Empty. Add your own CSS if you like */
+         /* Empty. Add your own CSS if you like */
+
+map {
+  display: block;
+  width: 50%;
+  height: 50%;
+}
+.scroll {
+  height: 50%;
+}
+
