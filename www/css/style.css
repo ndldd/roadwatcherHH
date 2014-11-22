@@ -2,8 +2,9 @@
          /* Empty. Add your own CSS if you like */
 
 map {
-  display: block;
-  width: 50%;
+  display: inline-block;
+  width: 50% ;
+
   height: 50%;
 }
 .scroll {

@@ -16,11 +16,14 @@
 
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es&sensor=true">
+    <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es&sensor=true">-->
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=true">
     </script>
 
     <!-- cordova script (this will be a 404 during development) -->
+    <!--
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+     -->
 
     <script src="cordova.js"></script>
 
@@ -32,11 +35,10 @@
 </head>
 
 
-
 <body ng-app="starter" ng-controller="MapCtrl">
 
 <ion-header-bar class="bar-stable">
-    <h1 class="title">Map</h1>
+    <h1 class="title">roadwatcher</h1>
 </ion-header-bar>
 
 
@@ -44,15 +46,40 @@
     <map on-create="mapCreated(map)"></map>
 
     <div ng-controller="GeoCtrl">
-        <div>test</div>
-        <button ng-click="myDo2()">myDo</button>
+        <label class="item item-input">
+            <span class="input-label">Strasse</span>
+            <input type="text">
+        </label>
+        <label class="item item-input">
+            <span class="input-label">Hausnummer</span>
+            <input type="text">
+        </label>
+        <label class="item item-input">
+            <span class="input-label">Adresse</span>
+            <input type="text">
+        </label>
+        <label class="item item-input item-stacked-label">
+            <span class="input-label">Beschreibung:</span>
+
+                <textarea placeholder="description" rows="8" cols="10">
+                </textarea>
+        </label>
+
+
+        <button class="button">
+            <i class="icon ion-loading-c"></i> Loading...
+        </button>
+        <button class="button" ng-click="myDo2()"><i class=""></i>
+        </button>
+
     </div>
+
 
 </ion-content>
 
 
 <ion-footer-bar class="bar-stable">
-    <div class="button">test</div>
+    <div class="button" ng-click="myDo()">myDo</div>
     <a ng-click="centerOnMe()" class="button button-icon icon ion-navigate"></a>
 </ion-footer-bar>
 

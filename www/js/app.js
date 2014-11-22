@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'ngCordova'])
+angular.module('starter', ['ionic',  ])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
@@ -19,22 +19,22 @@ angular.module('starter', ['ionic', 'ngCordova'])
         });
     })
 
-    .controller('GeoCtrl', function ($cordovaGeolocation, $scope) {
+    .controller('GeoCtrl', function (  $scope) {
         $scope.myDo2 = function () {
-
-            console.log('do');
-        var watch = $cordovaGeolocation.watchPosition(options);
-        watch.promise.then(function () { /* Not  used */
-            },
-            function (err) {
-                // error
-            }, function (position) {
-                var lat = position.coords.latitude;
-                var long = position.coords.longitude;
-                alert('do' + lat);
-            });
-
-        $cordovaGeolocation.clearWatch(watch.watchId);
+        //
+        //    console.log('do');
+        //var watch = $cordovaGeolocation.watchPosition(options);
+        //watch.promise.then(function () { /* Not  used */
+        //    },
+        //    function (err) {
+        //        // error
+        //    }, function (position) {
+        //        var lat = position.coords.latitude;
+        //        var long = position.coords.longitude;
+        //        alert('do' + lat);
+        //    });
+        //
+        //$cordovaGeolocation.clearWatch(watch.watchId);
         };
         // begin a watch
         var options = {
@@ -53,7 +53,6 @@ angular.module('starter', ['ionic', 'ngCordova'])
         };
 
         $scope.myDo = function () {
-
             //$cordovaGeolocation
             //    .getCurrentPosition()
             //    .then(function (position) {
@@ -69,9 +68,6 @@ angular.module('starter', ['ionic', 'ngCordova'])
             //        // error
             //    });
             console.log('test');
-
-
-
         };
 
         $scope.centerOnMe = function () {
@@ -87,10 +83,9 @@ angular.module('starter', ['ionic', 'ngCordova'])
             //});
 
             navigator.geolocation.getCurrentPosition(function (pos) {
-                console.log('Got pos', pos);
                 $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
                 //$scope.loading.hide();
-                alert('done')
+                alert('done'+pos.coords.latitude + 'long '+pos.coords.longitude)
             }, function (error) {
                 alert('Unable to get location: ' + error.message);
             });
