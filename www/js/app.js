@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic',])
+angular.module('starter', ['ionic', 'ngTagsInput'])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
@@ -52,61 +52,70 @@ angular.module('starter', ['ionic',])
             $scope.map = map;
         };
 
+        $scope.post = function () {
+            console.log('$scope.marker', $scope.marker);
+            alert('post');
+        }
         $scope.myDo = function () {
             navigator.geolocation.getCurrentPosition(function (pos) {
-                //$http.get('http://maps.googleapis.com/maps/api/geocode/json?latlng=44.4647452,7.3553838&sensor=true').success(function (data) {
-                $http.get('http://maps.googleapis.com/maps/api/geocode/json?latlng=' + $scope.latitude +
-                ',' + $scope.longitude + '&sensor=true').success(function (data) {
+                    //$http.get('http://maps.googleapis.com/maps/api/geocode/json?latlng=44.4647452,7.3553838&sensor=true').success(function (data) {
+                    $http.get('http://maps.googleapis.com/maps/api/geocode/json?latlng=' + $scope.latitude +
+                    ',' + $scope.longitude + '&sensor=true').success(function (data) {
 
-                    var address = data.results;
+                        var address = data.results;
 
-                    var address_components = address[0].address_components;
+                        var address_components = address[0].address_components;
 
 
-                    for (var i = 0; i < address_components.length; i++) {
-                        console.log(address_components[i]);
-                        var types = address_components[i].types;
-                        for (var j = 0; j < types.length; j++) {
-                            if (types[j] == "street_number") {
-                                $scope.streetNumber = address_components[i].long_name;
-                                console.log('$scope.streetNumber);', $scope.streetNumber);
+                        for (var i = 0; i < address_components.length; i++) {
+                            console.log(address_components[i]);
+                            var types = address_components[i].types;
+                            for (var j = 0; j < types.length; j++) {
+                                if (types[j] == "street_number") {
+                                    $scope.streetNumber = address_components[i].long_name;
+                                    console.log('$scope.streetNumber);', $scope.streetNumber);
+                                }
+                                if (types[j] == "route") {
+                                    $scope.route = address_components[i].long_name;
+                                    console.log('$scope.route', $scope.route);
+                                }
                             }
-                            if (types[j] == "route") {
-                                $scope.route = address_components[i].long_name;
-                                console.log('$scope.route', $scope.route);
-                            }
+
+                        }
+                        //console.log(address[1]);
+
+
+                        console.log(data.results);
+                        console.log('long: ', $scope.longitude);
+                        console.log('lat: ', $scope.latitude);
+                        //"Friesenstraße 13, 20097 Hamburg, Germany"
+
+                        console.log('scope map', $scope.map);
+                        //--------------------
+
+
+
+
+
+                        if ($scope.marker){
+
+                        $scope.marker.setMap(null);
                         }
 
-                    }
-                    //console.log(address[1]);
-                    //console.log(address[2]);
-                    //console.log(address[3]);
-                    //console.log(address[4]);
+                        $scope.marker = new google.maps.Marker({
+                            position:   new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
+                            //animation: google.maps.Animation.BOUNCE,
+                            draggable: true,
+                        });
+
+                        $scope.marker.setMap($scope.map);
+                    });
 
 
-                    console.log(data.results);
-                    console.log('long: ', $scope.longitude);
-                    console.log('lat: ', $scope.latitude);
-                    //"Friesenstraße 13, 20097 Hamburg, Germany"
-                })
-
-                console.log('current position', pos.coords.latitude, pos.coords.longitude);
-            });
-            //$cordovaGeolocation
-            //    .getCurrentPosition()
-            //    .then(function (position) {
-            //
-            //        console.log(position);
-            //        var lat = position.coords.latitude;
-            //        var long = position.coords.longitude;
-            //        alert('test' + lat)
-            //    }, function (err) {
-            //        alert('errro');
-            //        console.log(err);
-            //
-            //        // error
-            //    });
-            console.log('test');
+                    console.log('current position', pos.coords.latitude, pos.coords.longitude);
+                }
+            )
+            ;
         };
 
         $scope.centerOnMe = function () {
@@ -133,7 +142,8 @@ angular.module('starter', ['ionic',])
         };
     })
 
-    .directive('map', function () {
+    .
+    directive('map', function () {
         return {
             restrict: 'E',
             scope: {
