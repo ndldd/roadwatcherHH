@@ -3,7 +3,24 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-angular.module('starter', ['ionic', 'ngTagsInput'])
+
+var app = angular.module('rwApp', ['ionic', 'starter']);
+app.config(function($stateProvider) {
+  $stateProvider
+  .state('help', {
+    url: '/',
+    templateUrl: 'js/location/location.html'
+  })
+  .state('location2', {
+    url: '/location',
+    //templateUrl: 'js/location/location.html'
+    templateUrl: 'location3.html'
+    //templateUrl: '<ion-nav-view></ion-nav-view>'
+  });
+});
+
+
+angular.module('starter', [ 'ngTagsInput', 'setup'])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
@@ -46,6 +63,37 @@ angular.module('starter', ['ionic', 'ngTagsInput'])
         // clear watch
 
     })
+    .controller('PictureController', function ($scope, Camera) {
+
+        $scope.photo = Camera.picture;
+
+        $scope.makePhoto = function () {
+            Camera.getPicture().then(function (data) {
+                $scope.photo = data;
+                console.log(data);
+
+
+            })
+        }
+    }).factory('Camera', ['$q', function ($q) {
+
+        return {
+            picture : null,
+            getPicture: function (options) {
+                var q = $q.defer();
+
+                navigator.camera.getPicture(function (result) {
+                    // Do any magic you need
+                    this.picture = result;
+                    q.resolve(result);
+                }, function (err) {
+                    q.reject(err);
+                }, options);
+
+                return q.promise;
+            }
+        };
+    }])
 
     .controller('MapCtrl', function ($scope, $ionicLoading, $http) {
         $scope.mapCreated = function (map) {
@@ -54,68 +102,61 @@ angular.module('starter', ['ionic', 'ngTagsInput'])
 
         $scope.post = function () {
             console.log('$scope.marker', $scope.marker);
-            alert('post');
-        }
+        };
+
         $scope.myDo = function () {
+            $scope.getLocation();
+        };
+        $scope.setMarker = function (pos) {
+
+            if ($scope.marker) {
+
+                $scope.marker.setMap(null);
+            }
+
+            $scope.marker = new google.maps.Marker({
+                position: new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
+                //animation: google.maps.Animation.BOUNCE,
+                draggable: true
+            });
+
+            $scope.marker.setMap($scope.map);
+        };
+        $scope.getAddress = function (pos) {
+            //$http.get('http://maps.googleapis.com/maps/api/geocode/json?latlng=44.4647452,7.3553838&sensor=true').success(function (data) {
+            $http.get('http://maps.googleapis.com/maps/api/geocode/json?latlng=' + $scope.latitude +
+            ',' + $scope.longitude + '&sensor=true').success(function (data) {
+
+                var address = data.results;
+
+                var address_components = address[0].address_components;
+
+
+                for (var i = 0; i < address_components.length; i++) {
+                    console.log(address_components[i]);
+                    var types = address_components[i].types;
+                    for (var j = 0; j < types.length; j++) {
+                        if (types[j] == "street_number") {
+                            $scope.streetNumber = address_components[i].long_name;
+                            console.log('$scope.streetNumber);', $scope.streetNumber);
+                        }
+                        if (types[j] == "route") {
+                            $scope.route = address_components[i].long_name;
+                            console.log('$scope.route', $scope.route);
+                        }
+                    }
+
+                }
+                $scope.setMarker(pos);
+            });
+        };
+
+        $scope.getLocation = function () {
             navigator.geolocation.getCurrentPosition(function (pos) {
-                    //$http.get('http://maps.googleapis.com/maps/api/geocode/json?latlng=44.4647452,7.3553838&sensor=true').success(function (data) {
-                    $http.get('http://maps.googleapis.com/maps/api/geocode/json?latlng=' + $scope.latitude +
-                    ',' + $scope.longitude + '&sensor=true').success(function (data) {
-
-                        var address = data.results;
-
-                        var address_components = address[0].address_components;
-
-
-                        for (var i = 0; i < address_components.length; i++) {
-                            console.log(address_components[i]);
-                            var types = address_components[i].types;
-                            for (var j = 0; j < types.length; j++) {
-                                if (types[j] == "street_number") {
-                                    $scope.streetNumber = address_components[i].long_name;
-                                    console.log('$scope.streetNumber);', $scope.streetNumber);
-                                }
-                                if (types[j] == "route") {
-                                    $scope.route = address_components[i].long_name;
-                                    console.log('$scope.route', $scope.route);
-                                }
-                            }
-
-                        }
-                        //console.log(address[1]);
-
-
-                        console.log(data.results);
-                        console.log('long: ', $scope.longitude);
-                        console.log('lat: ', $scope.latitude);
-                        //"Friesenstraße 13, 20097 Hamburg, Germany"
-
-                        console.log('scope map', $scope.map);
-                        //--------------------
-
-
-
-
-
-                        if ($scope.marker){
-
-                        $scope.marker.setMap(null);
-                        }
-
-                        $scope.marker = new google.maps.Marker({
-                            position:   new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude),
-                            //animation: google.maps.Animation.BOUNCE,
-                            draggable: true,
-                        });
-
-                        $scope.marker.setMap($scope.map);
-                    });
-
-
+                    $scope.getAddress(pos);
                     console.log('current position', pos.coords.latitude, pos.coords.longitude);
                 }
-            )
-            ;
+            );
         };
 
         $scope.centerOnMe = function () {
@@ -133,6 +174,7 @@ angular.module('starter', ['ionic', 'ngTagsInput'])
             navigator.geolocation.getCurrentPosition(function (pos) {
                 $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
                 //$scope.loading.hide();
+                $scope.pos = pos;
                 $scope.longitude = pos.coords.longitude;
                 $scope.latitude = pos.coords.latitude;
                 console.log('done' + pos.coords.latitude + 'long ' + pos.coords.longitude);
@@ -142,8 +184,7 @@ angular.module('starter', ['ionic', 'ngTagsInput'])
         };
     })
 
-    .
-    directive('map', function () {
+    .directive('map', function () {
         return {
             restrict: 'E',
             scope: {
